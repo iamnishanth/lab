@@ -4,7 +4,7 @@ Small web experiments, one page each. Live at https://iamnishanth.github.io/lab/
 
 | # | Experiment | What it does |
 |---|---|---|
-| 001 | [Outfit color wheel](shirt-pants/) | Pick a shirt color; color theory suggests pants to match, then shoes for the pair. |
+| 001 | [Outfit color wheel](shirt-pants/) | Pick a shirt, T-shirt or polo color; color theory suggests pants or jeans to match, then dress or casual shoes. |
 
 ## Adding an experiment
 

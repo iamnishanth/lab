@@ -48,6 +48,17 @@
   .back:hover { color: var(--ink); }
   .back:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 2px; }
 
+  .outfit { display: flex; flex-wrap: wrap; gap: 18px 36px; margin: -8px 0 44px; }
+  .outfit fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .outfit legend { padding: 0; margin-bottom: 8px; font-size: .875rem; color: var(--ink-2); }
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 999px; background: var(--paper); }
+  .seg label { position: relative; cursor: pointer; }
+  .seg input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+  .seg span { display: block; padding: 6px 14px; border: 1px solid transparent; border-radius: 999px; font-size: .9375rem; }
+  .seg label:hover span { color: var(--ink); background: rgba(255,255,255,.5); }
+  .seg input:checked + span { background: var(--white); border-color: var(--ink); }
+  .seg input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 2px; }
+
   .stage {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -117,6 +128,10 @@
   .figure .pants-fill { fill: var(--pants); }
   .figure .shoes-fill { fill: var(--shoes); }
   .figure .belt-fill { fill: var(--belt); }
+  .figure .cuff-fill { fill: var(--cuff); }
+  .figure .thread { stroke: var(--thread); }
+  .figure .j-mottle { opacity: var(--mottle); }
+  .figure .j-slub { opacity: var(--slub); }
   .figure .shirt-fill, .figure .pants-fill, .figure .shoes-fill, .figure .belt-fill { transition: fill .35s var(--ease); }
 
   .shoes { margin-top: 26px; }
@@ -201,12 +216,37 @@
   <header class="top">
     <a class="back" href="../">Back to the lab</a>
     <h1>Pick a shirt.<br>We'll pick the rest.</h1>
-    <p class="lede">Choose a shirt color on the wheel. Each pair of pants below follows a color-theory rule, matched to a real trouser color you can actually buy, and every outfit comes with shoes that suit it.</p>
+    <p class="lede">Choose the pieces, then a color for the top. Each pair of pants or jeans below follows a color-theory rule, matched to a color you can actually buy, and every outfit comes with shoes that suit it.</p>
   </header>
 
+  <form class="outfit" id="outfit" aria-label="Outfit pieces">
+    <fieldset>
+      <legend>Top</legend>
+      <div class="seg">
+        <label><input type="radio" name="top" value="shirt" checked><span>Shirt</span></label>
+        <label><input type="radio" name="top" value="tee"><span>T-shirt</span></label>
+        <label><input type="radio" name="top" value="polo"><span>Polo</span></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Bottom</legend>
+      <div class="seg">
+        <label><input type="radio" name="bottom" value="trousers" checked><span>Trousers &amp; chinos</span></label>
+        <label><input type="radio" name="bottom" value="jeans"><span>Jeans</span></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Shoes</legend>
+      <div class="seg">
+        <label><input type="radio" name="shoes" value="dress" checked><span>Dress shoes</span></label>
+        <label><input type="radio" name="shoes" value="casual"><span>Casual shoes</span></label>
+      </div>
+    </fieldset>
+  </form>
+
   <main class="stage">
-    <section class="picker" aria-label="Shirt color">
-      <div class="wheel" id="wheel" tabindex="0" role="slider" aria-label="Shirt color wheel. Left and right change hue, up and down change saturation." aria-valuemin="0" aria-valuemax="360" aria-valuenow="0">
+    <section class="picker" aria-label="Top color">
+      <div class="wheel" id="wheel" tabindex="0" role="slider" aria-label="Top color wheel. Left and right change hue, up and down change saturation." aria-valuemin="0" aria-valuemax="360" aria-valuenow="0">
         <canvas id="wheelCanvas"></canvas>
         <svg id="wheelOverlay" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
       </div>
@@ -224,7 +264,7 @@
           </div>
         </div>
         <div>
-          <span class="field-label" id="presetLabel">Common shirts</span>
+          <span class="field-label" id="presetLabel">Common colors</span>
           <ul class="presets" id="presets" aria-labelledby="presetLabel"></ul>
         </div>
       </div>
@@ -232,41 +272,139 @@
 
     <section class="preview" aria-live="polite">
       <div class="figure">
-        <svg viewBox="0 0 300 545" role="img" aria-label="Outfit preview">
+        <svg id="figure" viewBox="0 0 300 545" role="img" aria-label="Outfit preview">
           <ellipse cx="150" cy="533" rx="122" ry="8" fill="rgba(0,0,0,.12)"/>
           <!-- pants -->
-          <g stroke="rgba(0,0,0,.22)" stroke-width="1.2" stroke-linejoin="round">
-            <path class="pants-fill" d="M78 250 H222 L230 512 H162 L150 314 L138 512 H70 Z"/>
+          <g id="trouserDetail">
+            <path class="pants-fill" stroke="rgba(0,0,0,.22)" stroke-width="1.2" stroke-linejoin="round" d="M78 250 H222 L230 512 H162 L150 314 L138 512 H70 Z"/>
+            <path d="M78 250 L70 512 H88 L96 262 Z M222 250 L230 512 H212 L204 262 Z" fill="rgba(0,0,0,.10)"/>
+            <path d="M150 314 L138 512 H128 L146 300 Z" fill="rgba(0,0,0,.08)"/>
+            <path d="M108 272 L104 510 M192 272 L196 510" stroke="rgba(0,0,0,.14)" stroke-width="1.4" fill="none"/>
+            <path d="M150 262 Q155 290 150 312" stroke="rgba(0,0,0,.22)" stroke-width="1.4" fill="none"/>
+            <path d="M71 498 H137 M163 498 H229" stroke="rgba(0,0,0,.12)" stroke-width="1.2"/>
           </g>
-          <path d="M78 250 L70 512 H88 L96 262 Z" fill="rgba(0,0,0,.10)"/>
-          <path d="M222 250 L230 512 H212 L204 262 Z" fill="rgba(0,0,0,.10)"/>
-          <path d="M150 314 L138 512 H128 L146 300 Z" fill="rgba(0,0,0,.08)"/>
-          <path d="M108 272 L104 510 M192 272 L196 510" stroke="rgba(0,0,0,.14)" stroke-width="1.4" fill="none"/>
-          <path d="M150 262 Q155 290 150 312" stroke="rgba(0,0,0,.22)" stroke-width="1.4" fill="none"/>
-          <path d="M71 498 H137 M163 498 H229" stroke="rgba(0,0,0,.12)" stroke-width="1.2"/>
+          <g id="jeansDetail">
+            <defs>
+              <clipPath id="jeansClip"><path d="M80 250 H220 Q227 286 223 322 C222 380 216 420 214 440 L212 512 H159 L158 420 Q156 360 150 318 Q144 360 142 420 L141 512 H88 L86 440 C84 420 78 380 77 322 Q73 286 80 250 Z"/></clipPath>
+              <filter id="slub" x="70" y="245" width="160" height="275" filterUnits="userSpaceOnUse">
+                <feTurbulence type="fractalNoise" baseFrequency="0.9 0.22" numOctaves="3" seed="7"/>
+                <feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0.6 0 0 0 -0.27"/>
+              </filter>
+              <filter id="mottle" x="70" y="245" width="160" height="275" filterUnits="userSpaceOnUse">
+                <feTurbulence type="fractalNoise" baseFrequency="0.7 0.3" numOctaves="2" seed="3"/>
+                <feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.7 0 0 0 -0.3"/>
+              </filter>
+              <filter id="crease" x="-10%" y="-60%" width="120%" height="220%"><feGaussianBlur stdDeviation="1"/></filter>
+              <pattern id="twill" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(-62)">
+                <rect width="1.1" height="3" fill="#000" fill-opacity=".09"/>
+              </pattern>
+              <linearGradient id="legShade" gradientUnits="userSpaceOnUse" x1="74" y1="0" x2="226" y2="0">
+                <stop offset="0" stop-color="#000" stop-opacity=".34"/>
+                <stop offset=".1" stop-color="#000" stop-opacity=".08"/>
+                <stop offset=".24" stop-color="#fff" stop-opacity=".1"/>
+                <stop offset=".4" stop-color="#000" stop-opacity=".1"/>
+                <stop offset=".5" stop-color="#000" stop-opacity=".3"/>
+                <stop offset=".6" stop-color="#000" stop-opacity=".1"/>
+                <stop offset=".76" stop-color="#fff" stop-opacity=".1"/>
+                <stop offset=".9" stop-color="#000" stop-opacity=".08"/>
+                <stop offset="1" stop-color="#000" stop-opacity=".34"/>
+              </linearGradient>
+              <radialGradient id="fade">
+                <stop offset="0" stop-color="#fff" stop-opacity=".24"/>
+                <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <path class="pants-fill" d="M80 250 H220 Q227 286 223 322 C222 380 216 420 214 440 L212 512 H159 L158 420 Q156 360 150 318 Q144 360 142 420 L141 512 H88 L86 440 C84 420 78 380 77 322 Q73 286 80 250 Z"/>
+            <g clip-path="url(#jeansClip)">
+              <rect x="70" y="245" width="160" height="275" fill="url(#twill)"/>
+              <rect class="j-mottle" x="70" y="245" width="160" height="275" filter="url(#mottle)"/>
+              <rect class="j-slub" x="70" y="245" width="160" height="275" filter="url(#slub)"/>
+              <ellipse cx="112" cy="365" rx="17" ry="85" fill="url(#fade)"/>
+              <ellipse cx="188" cy="365" rx="17" ry="85" fill="url(#fade)"/>
+              <rect x="70" y="245" width="160" height="275" fill="url(#legShade)"/>
+              <g filter="url(#crease)" fill="none" stroke-linecap="round">
+                <g stroke="#000" stroke-opacity=".28" stroke-width="2">
+                  <path d="M89 492 Q104 485 117 491 Q129 496 141 489 M90 478 Q106 472 123 479 M116 465 Q128 460 141 466"/>
+                  <path d="M211 492 Q196 485 183 491 Q171 496 159 489 M210 478 Q194 472 177 479 M184 465 Q172 460 159 466"/>
+                  <path d="M94 431 Q109 426 125 432 M206 431 Q191 426 175 432" stroke-opacity=".14"/>
+                </g>
+                <g stroke="#fff" stroke-opacity=".16" stroke-width="1.6">
+                  <path d="M90 489 Q104 482 117 488 Q129 493 140 486 M91 475 Q106 469 123 476 M117 462 Q128 457 140 463"/>
+                  <path d="M210 489 Q196 482 183 488 Q171 493 160 486 M209 475 Q194 469 177 476 M183 462 Q172 457 160 463"/>
+                </g>
+              </g>
+            </g>
+            <path d="M80 250 H220 Q227 286 223 322 C222 380 216 420 214 440 L212 512 H159 L158 420 Q156 360 150 318 Q144 360 142 420 L141 512 H88 L86 440 C84 420 78 380 77 322 Q73 286 80 250 Z" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M80 262 H220 M104 262 Q100 292 77 300 M196 262 Q200 292 223 300 M150 262 V316" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="1.2"/>
+            <g class="thread" fill="none" stroke-width=".75" stroke-dasharray="1.6 1.1" stroke-opacity=".85">
+              <path d="M80 253.5 H220 M80 259 H220"/>
+              <path d="M108.5 262 Q104.5 296 78 305 M191.5 262 Q195.5 296 222 305"/>
+              <path d="M158 263 V300 Q158 310 150.5 315"/>
+            </g>
+            <g fill="#B5793D" stroke="rgba(0,0,0,.35)" stroke-width=".5">
+              <circle cx="79.5" cy="300.5" r="1.8"/><circle cx="220.5" cy="300.5" r="1.8"/>
+            </g>
+            <g stroke="rgba(0,0,0,.28)" stroke-width="1" stroke-linejoin="round">
+              <path class="cuff-fill" d="M86 496 H143 L142 512 H87 Z"/>
+              <path class="cuff-fill" d="M157 496 H214 L213 512 H158 Z"/>
+            </g>
+            <path d="M87 497 H142 M158 497 H213" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+            <path d="M89 497 V511 M211 497 V511" stroke="#F3EFE4" stroke-width="1.4"/>
+            <path d="M90.6 497 V511 M209.4 497 V511" stroke="#B53A3A" stroke-width=".9"/>
+          </g>
           <!-- shoes -->
           <g stroke="rgba(0,0,0,.3)" stroke-width="1.2" stroke-linejoin="round">
             <path class="shoes-fill" d="M70 512 H140 V522 Q140 530 132 530 H52 Q44 530 46 522 Q50 514 70 512 Z"/>
             <path class="shoes-fill" d="M160 512 H230 Q250 514 254 522 Q256 530 248 530 H168 Q160 530 160 522 Z"/>
           </g>
-          <path d="M46 526 H140 M160 526 H254" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
-          <!-- shirt -->
-          <g stroke="rgba(0,0,0,.22)" stroke-width="1.2" stroke-linejoin="round">
-            <path class="shirt-fill" d="M118 34 L86 44 L56 58 Q44 64 40 80 L22 196 L56 204 L74 116 L78 252 L222 252 L226 116 L244 204 L278 196 L260 80 Q256 64 244 58 L214 44 L182 34 Q150 52 118 34 Z"/>
-            <path class="shirt-fill" d="M118 34 Q150 52 182 34 L179 25 Q150 42 121 25 Z"/>
-            <path class="shirt-fill" d="M118 34 L150 74 L133 88 L108 44 Z"/>
-            <path class="shirt-fill" d="M182 34 L150 74 L167 88 L192 44 Z"/>
+          <rect id="soleL" x="44" y="527" width="97" height="4" rx="2" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+          <rect id="soleR" x="159" y="527" width="97" height="4" rx="2" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+          <!-- button-up shirt -->
+          <g id="topShirt">
+            <g stroke="rgba(0,0,0,.22)" stroke-width="1.2" stroke-linejoin="round">
+              <path class="shirt-fill" d="M118 34 L86 44 L56 58 Q44 64 40 80 L22 196 L56 204 L74 116 L78 252 L222 252 L226 116 L244 204 L278 196 L260 80 Q256 64 244 58 L214 44 L182 34 Q150 52 118 34 Z"/>
+              <path class="shirt-fill" d="M118 34 Q150 52 182 34 L179 25 Q150 42 121 25 Z"/>
+              <path class="shirt-fill" d="M118 34 L150 74 L133 88 L108 44 Z"/>
+              <path class="shirt-fill" d="M182 34 L150 74 L167 88 L192 44 Z"/>
+            </g>
+            <path d="M78 120 L78 252 H96 L92 124 Z M222 120 L222 252 H204 L208 124 Z" fill="rgba(0,0,0,.08)"/>
+            <path d="M24 184 L58 192 L56 204 L22 196 Z M276 184 L242 192 L244 204 L278 196 Z" fill="rgba(0,0,0,.10)"/>
+            <path d="M100 110 H130 V140 L115 146 L100 140 Z" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="1.2"/>
+            <path d="M150 76 V252" stroke="rgba(0,0,0,.2)" stroke-width="1.2"/>
+            <g fill="rgba(255,255,255,.65)" stroke="rgba(0,0,0,.28)" stroke-width="1">
+              <circle cx="150" cy="98" r="3.2"/><circle cx="150" cy="132" r="3.2"/><circle cx="150" cy="166" r="3.2"/><circle cx="150" cy="200" r="3.2"/><circle cx="150" cy="234" r="3.2"/>
+            </g>
           </g>
-          <path d="M78 120 L78 252 H96 L92 124 Z M222 120 L222 252 H204 L208 124 Z" fill="rgba(0,0,0,.08)"/>
-          <path d="M24 184 L58 192 L56 204 L22 196 Z M276 184 L242 192 L244 204 L278 196 Z" fill="rgba(0,0,0,.10)"/>
-          <path d="M100 110 H130 V140 L115 146 L100 140 Z" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="1.2"/>
-          <path d="M150 76 V252" stroke="rgba(0,0,0,.2)" stroke-width="1.2"/>
-          <g fill="rgba(255,255,255,.65)" stroke="rgba(0,0,0,.28)" stroke-width="1">
-            <circle cx="150" cy="98" r="3.2"/><circle cx="150" cy="132" r="3.2"/><circle cx="150" cy="166" r="3.2"/><circle cx="150" cy="200" r="3.2"/><circle cx="150" cy="234" r="3.2"/>
+          <!-- T-shirt -->
+          <g id="topTee" style="display:none">
+            <path class="shirt-fill" d="M116 38 Q150 24 184 38 Q150 58 116 38 Z"/>
+            <path d="M116 38 Q150 24 184 38 Q150 58 116 38 Z" fill="rgba(0,0,0,.28)"/>
+            <path class="shirt-fill" stroke="rgba(0,0,0,.22)" stroke-width="1.2" stroke-linejoin="round" d="M116 38 Q150 58 184 38 L218 47 L252 62 Q262 66 266 76 L282 120 L250 133 L232 100 L230 284 L70 284 L68 100 L50 133 L18 120 L34 76 Q38 66 48 62 L82 47 Z"/>
+            <path d="M116 38 Q150 58 184 38 L180 44 Q150 64 120 44 Z" fill="rgba(0,0,0,.1)"/>
+            <path d="M68 104 L70 284 H86 L84 108 Z M232 104 L230 284 H214 L216 108 Z" fill="rgba(0,0,0,.07)"/>
+            <path d="M21 112 L49 124 M279 112 L251 124 M70 277 H230" stroke="rgba(0,0,0,.18)" stroke-width="1.2"/>
           </g>
-          <!-- belt -->
-          <rect class="belt-fill" x="78" y="250" width="144" height="12" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
-          <rect x="141" y="249" width="18" height="14" rx="2" fill="none" stroke="#B9A57A" stroke-width="2"/>
+          <!-- polo -->
+          <g id="topPolo" style="display:none">
+            <path class="shirt-fill" stroke="rgba(0,0,0,.22)" stroke-width="1.2" stroke-linejoin="round" d="M116 38 L150 56 L184 38 L218 47 L252 62 Q262 66 266 76 L282 120 L250 133 L232 100 L230 284 L70 284 L68 100 L50 133 L18 120 L34 76 Q38 66 48 62 L82 47 Z"/>
+            <path d="M68 104 L70 284 H86 L84 108 Z M232 104 L230 284 H214 L216 108 Z" fill="rgba(0,0,0,.07)"/>
+            <path d="M21 112 L49 124 L51 118 L23 106 Z M279 112 L251 124 L249 118 L277 106 Z" fill="rgba(0,0,0,.1)"/>
+            <path d="M70 277 H230" stroke="rgba(0,0,0,.18)" stroke-width="1.2"/>
+            <path d="M144 56 H156 V114 H144 Z" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1.1"/>
+            <g fill="rgba(255,255,255,.65)" stroke="rgba(0,0,0,.28)" stroke-width="1">
+              <circle cx="150" cy="78" r="2.6"/><circle cx="150" cy="99" r="2.6"/>
+            </g>
+            <g stroke="rgba(0,0,0,.22)" stroke-width="1.2" stroke-linejoin="round">
+              <path class="shirt-fill" d="M116 38 Q150 24 184 38 L182 31 Q150 18 118 31 Z"/>
+              <path class="shirt-fill" d="M116 38 L150 58 L140 74 L102 50 Z"/>
+              <path class="shirt-fill" d="M184 38 L150 58 L160 74 L198 50 Z"/>
+            </g>
+          </g>
+          <!-- belt, only visible with a tucked shirt -->
+          <g id="belt">
+            <rect class="belt-fill" x="78" y="250" width="144" height="12" stroke="rgba(0,0,0,.3)" stroke-width="1"/>
+            <rect x="141" y="249" width="18" height="14" rx="2" fill="none" stroke="#B9A57A" stroke-width="2"/>
+          </g>
         </svg>
       </div>
       <div>
@@ -287,7 +425,7 @@
 
   <section class="book" aria-labelledby="bookTitle">
     <h2 id="bookTitle">Pants that work</h2>
-    <p id="bookIntro">Pick a swatch to try it on. The small dot shows the exact color the rule asked for; the swatch is the closest real trouser color.</p>
+    <p id="bookIntro">Pick a swatch to try it on. The small dot shows the exact color the rule asked for; the swatch is the closest real color you can buy.</p>
     <ul class="swatches" id="swatches"></ul>
   </section>
 </div>
@@ -341,54 +479,96 @@ const PANTS = [
   ['Slate blue', '#4E5A6E', false], ['Petrol', '#285257', false], ['Mustard', '#B08A35', false],
 ].map(([name, hex, neutral]) => ({ name, hex, neutral, lab: rgbToLab(fromHex(hex)) }));
 
+const JEANS = [
+  ['Raw indigo', '#222E4D', true], ['Dark wash', '#2F4066', true], ['Mid wash', '#56709A', true],
+  ['Light wash', '#93AACB', true], ['Black', '#1E1F22', true], ['Washed black', '#3C3D40', true],
+  ['Grey', '#74777C', true], ['Ecru', '#E4DCC8', true], ['White', '#F0EFEA', true],
+  ['Olive', '#585C3C', false], ['Tan', '#A88B62', false], ['Rust', '#8A4C30', false],
+].map(([name, hex, neutral]) => ({ name, hex, neutral, lab: rgbToLab(fromHex(hex)) }));
+
+const BOTTOMS = {
+  trousers: {
+    lib: PANTS, noun: 'pants', title: 'Pants that work',
+    neutralOrder: ['Navy', 'Charcoal', 'Khaki', 'Raw denim', 'Olive', 'Stone', 'Chocolate', 'Mid grey',
+      'Light-wash denim', 'Black', 'Camel', 'Cream', 'Light grey', 'Forest green', 'Sage', 'Burgundy'],
+  },
+  jeans: {
+    lib: JEANS, noun: 'jeans', title: 'Jeans that work',
+    neutralOrder: ['Raw indigo', 'Mid wash', 'Black', 'Light wash', 'Dark wash', 'Grey', 'Ecru',
+      'Washed black', 'White', 'Olive', 'Tan'],
+  },
+};
+const TOPS = { shirt: 'shirt', tee: 'T-shirt', polo: 'polo' };
+
 const SHIRTS = [
   ['White', '#F5F5F2'], ['Light blue', '#A9C6E8'], ['Pink', '#EBB8C3'], ['Lavender', '#C3B4DF'],
   ['Sage', '#A9BCA0'], ['Butter yellow', '#EFE0A1'], ['Rust', '#A2502F'], ['Burgundy', '#6B2233'],
   ['Olive', '#5F6436'], ['Navy', '#22305A'], ['Heather grey', '#9A9C9F'], ['Black', '#1C1C1E'],
 ];
 
-const SHOES = [
-  ['Black leather', '#1A1A1A', 'leather', 'black leather shoes'],
-  ['Dark brown', '#3D2618', 'leather', 'dark brown shoes', 'brown'],
-  ['Mid brown', '#6E4428', 'leather', 'mid brown shoes', 'brown'],
-  ['Tan', '#A8703F', 'leather', 'tan shoes', 'brown'],
-  ['Oxblood', '#4E1B20', 'leather', 'oxblood shoes'],
-  ['Grey suede', '#8A8A86', 'casual', 'grey suede shoes'],
-  ['Navy suede', '#2C3652', 'casual', 'navy suede shoes'],
-  ['Sand suede', '#C2A882', 'casual', 'sand suede shoes'],
-  ['White sneakers', '#F2F1EC', 'sneaker', 'white sneakers'],
-].map(([name, hex, kind, phrase, family]) => ({ name, hex, kind, phrase, family: family || name, lab: rgbToLab(fromHex(hex)) }));
+const SOLES = {
+  dress: { y: 527, h: 4, color: '#2A2522' },
+  boot: { y: 524, h: 7, color: '#2A2522' },
+  crepe: { y: 523, h: 8, color: '#C9A273' },
+  sneaker: { y: 521, h: 10, color: '#F3F2EE' },
+};
+const makeShoes = rows => rows.map(([name, hex, kind, phrase, family, sole]) =>
+  ({ name, hex, kind, phrase, family, sole: SOLES[sole], lab: rgbToLab(fromHex(hex)) }));
+
+const SHOE_SETS = {
+  dress: makeShoes([
+    ['Black leather', '#1A1A1A', 'leather', 'black leather shoes', 'black', 'dress'],
+    ['Dark brown', '#3D2618', 'leather', 'dark brown shoes', 'brown', 'dress'],
+    ['Mid brown', '#6E4428', 'leather', 'mid brown shoes', 'brown', 'dress'],
+    ['Tan', '#A8703F', 'leather', 'tan shoes', 'brown', 'dress'],
+    ['Oxblood', '#4E1B20', 'leather', 'oxblood shoes', 'oxblood', 'dress'],
+  ]),
+  casual: makeShoes([
+    ['White sneakers', '#F2F1EC', 'sneaker', 'white sneakers', 'sneaker', 'sneaker'],
+    ['Black sneakers', '#232325', 'sneaker', 'black sneakers', 'sneaker', 'sneaker'],
+    ['Grey sneakers', '#9C9DA0', 'sneaker', 'grey sneakers', 'sneaker', 'sneaker'],
+    ['Navy sneakers', '#2B3452', 'sneaker', 'navy sneakers', 'sneaker', 'sneaker'],
+    ['Sand desert boots', '#C2A882', 'suede', 'sand desert boots', 'suede', 'crepe'],
+    ['Brown suede boots', '#6B4A33', 'suede', 'brown suede boots', 'suede', 'crepe'],
+    ['Brown suede loafers', '#5E4231', 'suede', 'brown suede loafers', 'suede', 'dress'],
+    ['Brown leather boots', '#4A2F1F', 'leather', 'brown leather boots', 'boot', 'boot'],
+    ['Black leather boots', '#1C1C1E', 'leather', 'black leather boots', 'black', 'boot'],
+  ]),
+};
 
 const lch = ([L, a, b]) => ({ L, C: Math.hypot(a, b), H: (Math.atan2(b, a) * 180 / Math.PI + 360) % 360 });
 const hueGap = (h1, h2) => { const d = Math.abs(h1 - h2) % 360; return d > 180 ? 360 - d : d; };
 const isEarthTone = c => c.C >= 8 && c.H >= 30 && c.H < 125;
 
-const darken = (hex, by) => { const [h, s, l] = rgbToHsl(...fromHex(hex)); return toHex(hslToRgb(h, s, l * by)); };
+const mix = (a, b, t) => { const x = fromHex(a), y = fromHex(b); return toHex(x.map((v, i) => Math.round(v + (y[i] - v) * t))); };
+const darken = (hex, by) =>{ const [h, s, l] = rgbToHsl(...fromHex(hex)); return toHex(hslToRgb(h, s, l * by)); };
 
-function beltFor(shoe, pant) {
+function beltFor(shoe, pant, noun) {
   if (shoe.kind === 'leather') return { hex: shoe.hex, why: 'Wear a belt in the same leather color as the shoes.' };
-  if (shoe.kind === 'casual') return { hex: darken(shoe.hex, 0.85), why: `Casual shoes loosen the rule; a ${shoe.name.split(' ')[0].toLowerCase()} belt (suede or woven) keeps it tied together.` };
-  return { hex: darken(pant.hex, 0.7), why: 'A white belt would shout, so go with a belt that blends into the pants.' };
+  if (shoe.kind === 'suede') return { hex: darken(shoe.hex, 0.85), why: 'Casual shoes loosen the rule; a belt in a similar shade (suede or woven) keeps it tied together.' };
+  return { hex: darken(pant.hex, 0.7), why: `Sneakers have no leather to match, so go with a belt that blends into the ${noun}.` };
 }
 
-function suggestShoes(pant) {
+function suggestShoes(pant, set, noun) {
   const P = lch(pant.lab);
-  const pantWord = pant.name.toLowerCase();
-  const scored = SHOES.map(shoe => {
+  const pantWord = `${pant.name.toLowerCase()} ${noun}`;
+  const scored = set.map(shoe => {
     const S = lch(shoe.lab);
-    let score = shoe.kind === 'leather' ? 0 : -0.6;
+    let score = 0;
     let hueNote = '', valueNote = '';
 
     const depth = P.L - S.L;
     if (shoe.kind === 'sneaker') {
-      if (P.L > 75) score -= 3;
-      else { score += 1.2; valueNote = 'White is the lightest neutral, so it gives a crisp, casual break under darker pants.'; }
+      if (Math.abs(depth) >= 15) {
+        score += Math.abs(depth) >= 40 ? 1.6 : 1.2;
+        valueNote = depth > 0 ? `Darker than the ${noun}, so the outfit settles toward the ground.` : `Lighter than the ${noun}: a crisp, casual break at the hem.`;
+      } else score += 0.3;
     } else if (depth >= 12) {
-      score += 2; valueNote = 'Darker than the pants, so the outfit settles toward the ground.';
+      score += 2; valueNote = `Darker than the ${noun}, so the outfit settles toward the ground.`;
     } else if (depth >= -3) {
-      score += 0.8; valueNote = 'Close in depth to the pants, so the leg reads as one long line.';
-    } else if (shoe.kind === 'casual') {
-      score -= 0.6; valueNote = 'Lighter than the pants, which keeps the look relaxed.';
+      score += 0.8; valueNote = `Close in depth to the ${noun}, so the leg reads as one long line.`;
+    } else if (shoe.kind === 'suede') {
+      score -= 0.6; valueNote = `Lighter than the ${noun}, which keeps the look relaxed.`;
     } else {
       score -= Math.min(2, -depth / 15);
     }
@@ -401,10 +581,10 @@ function suggestShoes(pant) {
       else if (gap >= 90) { score += 1; hueNote = `Its hue is far enough from ${pantWord} to contrast without fighting.`; }
       else if (gap <= 55) { score += 1.5; hueNote = `It shares a hue family with ${pantWord}, an easy analogous match.`; }
     } else if (!pantChroma && shoeChroma) {
-      score += 1; hueNote = `Neutral pants let the shoe add a little color.`;
+      score += 1; hueNote = `Neutral ${noun} let the shoe add a little color.`;
     } else if (pantChroma && !shoeChroma) {
-      if (isEarthTone(P) && shoe.name === 'Black leather') { score -= 1.5; hueNote = 'Black is stark against warm earth tones.'; }
-      else if (P.H >= 180 && P.H < 330) { score += 0.8; hueNote = `A neutral that stays in the same cool register as ${pantWord}.`; }
+      if (isEarthTone(P) && shoe.family === 'black') { score -= 1.5; hueNote = 'Black is stark against warm earth tones.'; }
+      else { score += 1.2; hueNote = `A neutral shoe has no hue to clash with ${pantWord}.`; }
     } else {
       score += P.L < 70 ? 1 : 0.4; hueNote = 'An all-neutral pairing: clean and hard to get wrong.';
     }
@@ -416,11 +596,16 @@ function suggestShoes(pant) {
   const picks = [], families = {};
   for (const s of scored) {
     const f = s.shoe.family;
-    if ((families[f] || 0) >= 2 || (f !== 'brown' && families[f])) continue;
+    if ((families[f] || 0) >= (f === 'brown' || f === 'sneaker' ? 2 : 1)) continue;
     if (s.score < 1 && picks.length >= 2) break;
     families[f] = (families[f] || 0) + 1;
     picks.push(s);
     if (picks.length === 3) break;
+  }
+  // Sneakers are the default casual shoe, so a casual list always offers the best one.
+  const bestSneaker = scored.find(s => s.shoe.kind === 'sneaker');
+  if (bestSneaker && bestSneaker.score >= 1 && !picks.some(s => s.shoe.kind === 'sneaker')) {
+    picks[Math.min(picks.length, 2)] = bestSneaker;
   }
   return picks;
 }
@@ -434,15 +619,15 @@ const RULES = [
   { key: 'tonal', name: 'Tonal', offsets: [0] },
 ];
 
-function whyText(key, off, darker) {
-  const tone = darker ? 'a darker shade grounds the lighter shirt' : 'a lighter shade lifts the darker shirt';
+function whyText(key, off, darker, noun) {
+  const tone = darker ? 'a darker shade grounds the lighter top' : 'a lighter shade lifts the darker top';
   switch (key) {
     case 'neutral': return `A neutral with a hint of the opposite hue. Lowest risk; ${tone}.`;
-    case 'comp': return `Directly opposite your shirt (180°). Muted down for trousers, so it contrasts without clashing.`;
+    case 'comp': return `Directly opposite your top (180°). Muted down for ${noun}, so it contrasts without clashing.`;
     case 'split': return `${off}° around, next to the complement. Contrast with a softer edge than a straight opposite.`;
     case 'analog': return `A neighbor ${Math.abs(off)}° ${off > 0 ? 'clockwise' : 'counter-clockwise'}. Calm and coordinated; ${tone}.`;
-    case 'triad': return `A third of the way around (${off}°). Bolder, and it works because the pants are muted.`;
-    case 'tonal': return `Same hue family as the shirt, shifted in lightness. A clean, monochrome look.`;
+    case 'triad': return `A third of the way around (${off}°). Bolder, and it works because the ${noun} are muted.`;
+    case 'tonal': return `Same hue family as the top, shifted in lightness. A clean, monochrome look.`;
   }
 }
 
@@ -481,7 +666,8 @@ function shirtName(h, s, l) {
 }
 
 /* ---------- suggestion engine ---------- */
-function suggest({ h, s, l }) {
+function suggest({ h, s, l, bottom }) {
+  const { lib, noun, neutralOrder } = BOTTOMS[bottom];
   const shirtLab = rgbToLab(hslToRgb(h, s, l));
   const Ls = shirtLab[0];
   const darker = Ls >= 45;
@@ -489,16 +675,14 @@ function suggest({ h, s, l }) {
   const neutralShirt = s < 0.12 || l > 0.94 || l < 0.08;
 
   if (neutralShirt) {
-    const order = ['Navy', 'Charcoal', 'Khaki', 'Raw denim', 'Olive', 'Stone', 'Chocolate', 'Mid grey',
-      'Light-wash denim', 'Black', 'Camel', 'Cream', 'Light grey', 'Forest green', 'Sage', 'Burgundy'];
-    return order.map(n => PANTS.find(p => p.name === n))
+    return neutralOrder.map(n => lib.find(p => p.name === n))
       .filter(p => Math.abs(p.lab[0] - Ls) >= 22)
       .slice(0, 6)
       .map(p => {
         const gap = Math.round(Math.abs(p.lab[0] - Ls));
         return {
           rule: 'Contrast pick', key: 'contrast', pant: p, target: p.hex, hue: null,
-          why: `A neutral shirt has no hue to clash with, so the choice comes down to contrast. ${p.name} sits ${gap} points ${p.lab[0] < Ls ? 'darker' : 'lighter'}.`,
+          why: `A neutral top has no hue to clash with, so the choice comes down to contrast. ${p.name} sits ${gap} points ${p.lab[0] < Ls ? 'darker' : 'lighter'}.`,
         };
       });
   }
@@ -513,7 +697,7 @@ function suggest({ h, s, l }) {
       if (rule.key === 'tonal') { ts = clamp(s * 0.7, 0.2, 0.5); tl = darker ? 0.2 : 0.72; }
       const targetRgb = hslToRgb(hue, ts, tl);
       const tLab = rgbToLab(targetRgb);
-      const pick = PANTS
+      const pick = lib
         .filter(p => !used.has(p.name) && (!rule.neutralOnly || p.neutral))
         .filter(p => Math.abs(p.lab[0] - Ls) >= 14 && (rule.key === 'tonal' || dE(p.lab, shirtLab) > 18))
         .map(p => ({ p, d: dE(p.lab, tLab) }))
@@ -524,17 +708,37 @@ function suggest({ h, s, l }) {
     used.add(best.p.name);
     return {
       rule: rule.name, key: rule.key, pant: best.p, target: best.target, hue: best.hue, off: best.off,
-      why: whyText(rule.key, best.off, darker) +
-        (best.d > 25 ? ' Trousers rarely come in the exact rule color, so this is the nearest real one.' : ''),
+      why: whyText(rule.key, best.off, darker, noun) +
+        (best.d > 25 ? ` ${noun[0].toUpperCase() + noun.slice(1)} rarely come in the exact rule color, so this is the nearest real one.` : ''),
     };
   }).filter(Boolean);
 }
 
 /* ---------- state & rendering ---------- */
 const [h0, s0, l0] = rgbToHsl(...fromHex('#A9C6E8'));
-const state = { h: h0, s: s0, l: l0, preset: 'Light blue', pick: 0, list: [], shoes: [], shoe: 0, shoesFor: null };
+const state = {
+  h: h0, s: s0, l: l0, preset: 'Light blue', pick: 0, list: [],
+  top: 'shirt', bottom: 'trousers', shoeStyle: 'dress',
+  shoes: [], shoe: 0, shoesFor: null,
+};
 
-const shoeIcon = hex => `<svg viewBox="0 0 34 18" aria-hidden="true"><path d="M2 7 Q2 3 6 3 H15 Q19 3 21 7 L29 10 Q33 11.5 33 14.5 V15 H2 Z" fill="${hex}" stroke="rgba(0,0,0,.35)" stroke-width="1"/><path d="M2 15 H33" stroke="rgba(0,0,0,.35)" stroke-width="1.5"/></svg>`;
+const shoeIcon = shoe => `<svg viewBox="0 0 34 18" aria-hidden="true"><path d="M2 7 Q2 3 6 3 H15 Q19 3 21 7 L29 10 Q33 11.5 33 14.5 V15 H2 Z" fill="${shoe.hex}" stroke="rgba(0,0,0,.35)" stroke-width="1"/><path d="M2 15.5 H33" stroke="${shoe.sole.color}" stroke-width="${shoe.sole.h > 6 ? 3.5 : 1.8}"/></svg>`;
+
+function drawFigure(shoe) {
+  const show = (id, on) => { $(id).style.display = on ? '' : 'none'; };
+  show('topShirt', state.top === 'shirt');
+  show('topTee', state.top === 'tee');
+  show('topPolo', state.top === 'polo');
+  show('belt', state.top === 'shirt');
+  show('trouserDetail', state.bottom === 'trousers');
+  show('jeansDetail', state.bottom === 'jeans');
+  for (const id of ['soleL', 'soleR']) {
+    const r = $(id);
+    r.setAttribute('y', shoe.sole.y);
+    r.setAttribute('height', shoe.sole.h);
+    r.setAttribute('fill', shoe.sole.color);
+  }
+}
 
 function renderShoes() {
   const ul = $('shoeList');
@@ -544,7 +748,7 @@ function renderShoes() {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'shoe';
     b.setAttribute('aria-pressed', String(i === state.shoe));
-    b.innerHTML = `${shoeIcon(s.shoe.hex)}${s.shoe.name}`;
+    b.innerHTML = `${shoeIcon(s.shoe)}${s.shoe.name}`;
     b.addEventListener('click', () => { state.shoe = i; update(false); });
     li.appendChild(b); ul.appendChild(li);
   });
@@ -651,10 +855,11 @@ function update(recompute) {
   root.setProperty('--shirt', shirtHex);
   root.setProperty('--pants', sg.pant.hex);
 
-  const shoesChanged = state.shoesFor !== sg.pant.name;
-  if (shoesChanged) {
-    state.shoes = suggestShoes(sg.pant);
-    state.shoesFor = sg.pant.name;
+  const { noun, title } = BOTTOMS[state.bottom];
+  const shoeKey = `${state.bottom}|${sg.pant.name}|${state.shoeStyle}`;
+  if (state.shoesFor !== shoeKey) {
+    state.shoes = suggestShoes(sg.pant, SHOE_SETS[state.shoeStyle], noun);
+    state.shoesFor = shoeKey;
     state.shoe = 0;
     renderShoes();
   } else {
@@ -662,13 +867,26 @@ function update(recompute) {
   }
   const shoe = state.shoes[state.shoe];
   root.setProperty('--shoes', shoe.shoe.hex);
-  const belt = beltFor(shoe.shoe, sg.pant);
+  const tucked = state.top === 'shirt';
+  const belt = beltFor(shoe.shoe, sg.pant, noun);
   root.setProperty('--belt', belt.hex);
-  $('shoeWhy').textContent = `${shoe.why} ${belt.why}`;
+  $('shoeWhy').textContent = tucked ? `${shoe.why} ${belt.why}` : shoe.why;
   $('mShoes').style.background = shoe.shoe.hex;
+  drawFigure(shoe.shoe);
+  if (state.bottom === 'jeans') {
+    const P = lch(sg.pant.lab);
+    const indigo = P.C > 8 && P.H > 230 && P.H < 300;
+    root.setProperty('--thread', indigo ? '#D6A24A' : mix(sg.pant.hex, P.L < 50 ? '#FFFFFF' : '#000000', 0.35));
+    root.setProperty('--cuff', mix(sg.pant.hex, '#FFFFFF', P.L < 50 ? 0.3 : 0.15));
+    root.setProperty('--mottle', P.L > 60 ? 0.3 : 1);
+    root.setProperty('--slub', P.L < 25 ? 0.5 : P.L > 75 ? 0.45 : 1);
+  }
+  $('bookTitle').textContent = title;
 
   const name = state.preset || shirtName(state.h, state.s, state.l);
-  $('pairing').textContent = `${name} shirt, ${sg.pant.name.toLowerCase()} pants, ${shoe.shoe.phrase}`;
+  const outfit = `${name} ${TOPS[state.top]}, ${sg.pant.name.toLowerCase()} ${noun}, ${shoe.shoe.phrase}`;
+  $('pairing').textContent = outfit;
+  $('figure').setAttribute('aria-label', `Outfit preview: ${outfit}`);
   $('reason').textContent = sg.why;
 
   const Ls = rgbToLab(fromHex(shirtHex))[0];
@@ -686,8 +904,8 @@ function update(recompute) {
 
   const neutral = sg.key === 'contrast';
   $('wheelNote').textContent = neutral
-    ? 'Neutral shirts sit at the center of the wheel, so there are no harmony lines. Pants are picked by contrast.'
-    : 'Lines show where each rule lands on the wheel. Dots are filled with the matching trouser color.';
+    ? `Neutral colors sit at the center of the wheel, so there are no harmony lines. The ${noun} are picked by contrast.`
+    : `Lines show where each rule lands on the wheel. Dots are filled with the matching ${noun} color.`;
   wheel.setAttribute('aria-valuenow', String(Math.round(state.h)));
   wheel.setAttribute('aria-valuetext', `${name}, ${shirtHex}`);
 
@@ -735,6 +953,13 @@ $('hex').addEventListener('input', e => {
   update(true);
 });
 $('hex').addEventListener('blur', () => update(false));
+$('outfit').addEventListener('change', () => {
+  const f = new FormData($('outfit'));
+  const bottomChanged = f.get('bottom') !== state.bottom;
+  Object.assign(state, { top: f.get('top'), bottom: f.get('bottom'), shoeStyle: f.get('shoes') });
+  if (bottomChanged) state.pick = 0;
+  update(bottomChanged);
+});
 window.addEventListener('resize', () => { renderedL = null; drawWheel(); });
 
 update(true);
