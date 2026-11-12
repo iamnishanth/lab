@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>lab</title>
+<meta name="description" content="Small web experiments, one page each.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M12 3h8v2h-1v8l8 14a2 2 0 0 1-2 3H7a2 2 0 0 1-2-3l8-14V5h-1z' fill='%231C2433'/%3E%3Cpath d='M9 22h14l3 5H6z' fill='%23A9C6E8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F2F4F1;
+    --grid: rgba(64, 98, 140, .09);
+    --grid-strong: rgba(64, 98, 140, .16);
+    --ink: #1C2433;
+    --ink-2: #5A6475;
+    --rule: #C3CCD7;
+    --margin: rgba(204, 70, 64, .55);
+    --cell: 24px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.5;
+    font-variation-settings: "opsz" 14;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid-strong) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-strong) 1px, transparent 1px),
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: calc(var(--cell) * 5) calc(var(--cell) * 5), calc(var(--cell) * 5) calc(var(--cell) * 5), var(--cell) var(--cell), var(--cell) var(--cell);
+  }
+  .sheet {
+    position: relative;
+    max-width: 920px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 72px 24px 96px 112px;
+  }
+  .sheet::before {
+    content: "";
+    position: absolute; top: 0; bottom: 0; left: 80px;
+    width: 2px; background: var(--margin);
+  }
+
+  header { margin-bottom: 56px; }
+  .wordmark {
+    margin: 0;
+    font-size: clamp(6rem, 22vw, 12rem);
+    line-height: .78;
+    font-weight: 800;
+    font-variation-settings: "opsz" 96, "wdth" 75;
+    letter-spacing: -.03em;
+  }
+  .intro { margin: 22px 0 0; max-width: 32rem; font-size: 1.1875rem; color: var(--ink-2); }
+
+  .log { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+  .entry { border-bottom: 1px solid var(--rule); }
+  .entry a {
+    display: grid;
+    grid-template-columns: 4.5rem 88px minmax(0, 1fr) auto;
+    gap: 0 24px;
+    align-items: center;
+    padding: 22px 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .entry a:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; border-radius: 2px; }
+  .num {
+    font-size: 1.5rem; font-weight: 300; color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+    font-variation-settings: "opsz" 40, "wdth" 75;
+  }
+  .thumb { width: 88px; height: 88px; display: block; }
+  .title {
+    display: block;
+    font-size: 1.625rem; line-height: 1.1; font-weight: 750;
+    font-variation-settings: "opsz" 48, "wdth" 85;
+    text-decoration: underline; text-decoration-color: transparent;
+    text-decoration-thickness: 2px; text-underline-offset: 5px;
+    transition: text-decoration-color .2s;
+  }
+  .entry a:hover .title, .entry a:focus-visible .title { text-decoration-color: currentColor; }
+  .blurb { display: block; margin-top: 6px; color: var(--ink-2); max-width: 34rem; }
+  .date { color: var(--ink-2); font-size: .9375rem; white-space: nowrap; align-self: start; padding-top: 6px; }
+
+  .empty { padding: 22px 0; color: var(--ink-2); }
+
+  footer { margin-top: 48px; font-size: .9375rem; color: var(--ink-2); }
+  footer a { color: inherit; text-underline-offset: 3px; }
+  footer a:hover { color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .sheet { padding: 40px 16px 64px 44px; }
+    .sheet::before { left: 28px; }
+    .entry a { grid-template-columns: 64px minmax(0, 1fr); gap: 4px 16px; align-items: start; }
+    .num { grid-column: 1 / -1; font-size: 1.125rem; }
+    .thumb { width: 64px; height: 64px; grid-row: span 2; }
+    .date { padding-top: 0; grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header>
+    <h1 class="wordmark">lab</h1>
+    <p class="intro">Small things I build to see if they work. Each experiment is a single page you can open and play with.</p>
+  </header>
+
+  <main>
+    <ol class="log" id="log" aria-label="Experiments"></ol>
+  </main>
+
+  <footer>
+    <a href="https://github.com/iamnishanth/lab">Source on GitHub</a>
+  </footer>
+</div>
+
+<script>
+const THUMBS = {
+  shirtPants: `
+    <svg viewBox="0 0 88 88" aria-hidden="true">
+      <defs><clipPath id="c1"><circle cx="44" cy="44" r="40"/></clipPath></defs>
+      <g clip-path="url(#c1)">
+        <rect width="88" height="88" fill="#A9C6E8"/>
+        <path d="M44 44 L88 44 L88 88 L44 88 Z" fill="#4B3529"/>
+        <path d="M44 44 L0 44 L0 88 L44 88 Z" fill="#3A3D42"/>
+      </g>
+      <circle cx="44" cy="44" r="40" fill="none" stroke="#1C2433" stroke-width="1.5"/>
+      <line x1="44" y1="44" x2="16" y2="16" stroke="#1C2433" stroke-width="1.5"/>
+      <line x1="44" y1="44" x2="72" y2="72" stroke="#F2F4F1" stroke-width="1.5" stroke-dasharray="3 3"/>
+      <circle cx="44" cy="44" r="2.5" fill="#1C2433"/>
+    </svg>`,
+};
+
+const EXPERIMENTS = [
+  {
+    path: 'shirt-pants/',
+    title: 'Shirt & pants wheel',
+    blurb: 'Pick a shirt color and color theory suggests pants to match, from complementary to tonal.',
+    date: '2026-11-13',
+    thumb: THUMBS.shirtPants,
+  },
+];
+
+const fmt = new Intl.DateTimeFormat('en', { month: 'short', year: 'numeric' });
+const log = document.getElementById('log');
+if (!EXPERIMENTS.length) {
+  log.innerHTML = '<li class="empty">Nothing on the bench yet.</li>';
+}
+EXPERIMENTS.forEach((x, i) => {
+  const li = document.createElement('li');
+  li.className = 'entry';
+  li.innerHTML = `
+    <a href="${x.path}">
+      <span class="num">${String(i + 1).padStart(3, '0')}</span>
+      <span class="thumb">${x.thumb}</span>
+      <span>
+        <span class="title">${x.title}</span>
+        <span class="blurb">${x.blurb}</span>
+      </span>
+      <time class="date" datetime="${x.date}">${fmt.format(new Date(x.date + 'T12:00:00'))}</time>
+    </a>`;
+  log.appendChild(li);
+});
+</script>
+</body>
+</html>
