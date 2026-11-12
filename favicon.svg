@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <clipPath id="flask">
+      <path d="M13.4 12.6 V7.4 h5.2 v5.2 l6.3 10.7 a2.1 2.1 0 0 1 -1.8 3.2 H9.9 a2.1 2.1 0 0 1 -1.8 -3.2 Z"/>
+    </clipPath>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#1C2433"/>
+  <path d="M12.2 5.4 h7.6 a1 1 0 0 1 0 2 h-0.6 v5 l6.4 10.9 a2.9 2.9 0 0 1 -2.5 4.3 H8.9 a2.9 2.9 0 0 1 -2.5 -4.3 L12.8 12.4 v-5 h-0.6 a1 1 0 0 1 0 -2 Z" fill="#F2F4F1"/>
+  <g clip-path="url(#flask)">
+    <rect x="0" y="18.4" width="32" height="14" fill="#A9C6E8"/>
+  </g>
+  <circle cx="14.2" cy="22.6" r="1.3" fill="#F2F4F1"/>
+  <circle cx="17.8" cy="20.6" r="0.8" fill="#F2F4F1"/>
+</svg>
